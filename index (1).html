@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INFERENCE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+:root{--bg:#060b13;--panel:#0a121d;--panel2:#0e1826;--line:#16253a;--text:#d9e4ee;--mute:#6c8196;--accent:#3dd6c3;--accent2:#f4a25a;--bad:#ff6b7a;--r:12px;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.55 Inter,system-ui,sans-serif;display:flex}
+button,input,textarea,select{font:inherit;color:inherit}
+code,pre,.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg{flex-shrink:0}
+#side{width:260px;background:#08101a;border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;transition:transform .2s}
+.brand{display:flex;gap:12px;align-items:center;padding:16px 18px;height:72px;border-bottom:1px solid var(--line)}
+.brand b{display:block;letter-spacing:.12em;font-size:14px}
+.brand small{color:var(--mute);letter-spacing:.12em;font-size:10px}
+.logo{width:36px;height:36px;border-radius:10px;border:1px solid #1c5a58;background:rgba(61,214,195,.1);display:grid;place-items:center}
+.logo i{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+nav{overflow-y:auto;padding:14px 12px 16px;flex:1}
+nav button{display:flex;width:100%;align-items:center;gap:12px;background:none;border:1px solid transparent;border-radius:10px;padding:9px 12px;margin-bottom:3px;cursor:pointer;color:#9fb1c3;text-align:left}
+nav button:hover{background:var(--panel2);color:var(--text)}
+nav button.on{background:rgba(61,214,195,.1);border-color:#1c5a58;color:#e9fffb}
+nav button.on svg{color:var(--accent)}
+nav .dot{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:4px}
+nav em{margin-left:auto;font-style:normal;font-size:11px;color:var(--mute);font-family:'JetBrains Mono',monospace}
+.grp{font-size:11px;letter-spacing:.1em;color:var(--mute);padding:20px 12px 8px}
+#main{flex:1;min-width:0;display:flex;flex-direction:column;height:100%}
+header{display:flex;align-items:center;gap:10px;padding:0 28px;height:72px;border-bottom:1px solid var(--line);background:#08101a}
+header h1{font-size:13px;margin:0;font-weight:500;letter-spacing:.1em;color:#9fb1c3;display:flex;gap:10px;align-items:center;text-transform:uppercase}
+#menu{display:none;background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer}
+.pill{display:flex;align-items:center;gap:8px;font-size:12px;border:1px solid var(--line);border-radius:99px;padding:4px 12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--bad);flex-shrink:0}
+.pill.ok{color:var(--accent);border-color:#1c5a58;background:rgba(61,214,195,.08)}
+.pill.ok i{background:var(--accent)}
+#live{margin-left:auto}
+#view{flex:1;overflow-y:auto;padding:32px 36px;min-height:0}
+.phead{margin-bottom:24px}
+.phead small{display:block;font-size:12px;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;margin-bottom:6px}
+.phead h2{display:flex;gap:12px;align-items:center;font-size:28px;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+.phead h2 svg{color:var(--accent)}
+.phead p{margin:0;color:var(--mute);max-width:72ch}
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.dashed{border-style:dashed;background:transparent}
+.panel h4{margin:0 0 4px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.hint,.mute{color:var(--mute)}
+.panel .hint{margin:0 0 12px;font-size:13px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:20px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);color:var(--mute)}
+.kv b{font-weight:500;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px}
+.li{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;margin-bottom:8px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.li:hover{border-color:#1c5a58;background:var(--panel2)}
+.li em{font-style:normal;color:var(--mute);font-size:12px}
+h3{margin:0 0 4px;font-size:16px;font-weight:600}
+.btn{background:var(--accent);color:#04201d;border:0;border-radius:10px;padding:9px 16px;font-weight:600;cursor:pointer}
+.btn:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:none;color:var(--text);border:1px solid var(--line)}
+.btn.danger{background:none;color:var(--bad);border:1px solid var(--line)}
+input,textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+label{display:block;margin:12px 0 4px;font-size:13px;color:var(--mute)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.err{color:var(--bad);font-size:14px;margin-top:8px}
+.warn{border:1px solid #5b3d1f;background:rgba(244,162,90,.08);padding:12px 14px;border-radius:10px}
+#chatwrap{display:flex;flex-direction:column;height:100%}
+#msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-bottom:12px;min-height:0}
+.m{max-width:min(780px,92%);padding:12px 16px;border-radius:var(--r);overflow-wrap:anywhere}
+.m.user{align-self:flex-end;background:rgba(61,214,195,.1);border:1px solid #1c5a58}
+.m.assistant{align-self:flex-start;background:var(--panel);border:1px solid var(--line)}
+.m p:first-child{margin-top:0}.m p:last-child{margin-bottom:0}
+.m pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;position:relative}
+.m :not(pre)>code{background:var(--bg);padding:1px 5px;border-radius:5px}
+.copy{position:absolute;top:6px;right:6px;font-size:11px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer}
+.dots span{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:var(--accent);animation:b 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes b{50%{opacity:.2;transform:translateY(-3px)}}
+#composer{display:flex;gap:10px;align-items:flex-end}
+#composer textarea{resize:none;max-height:160px}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:var(--r);padding:24px;width:min(460px,92vw)}
+dialog::backdrop{background:#000b}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+@media(max-width:820px){
+ #side{position:fixed;inset:0 auto 0 0;z-index:20;transform:translateX(-100%)}
+ #side.open{transform:none}
+ #menu{display:block}
+ header{padding:0 16px}#view{padding:20px 16px}
+ .pill:not(#live){max-width:48vw}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<aside id="side"><div class="brand"><span class="logo"><i></i></span><div><b>INFERENCE</b><small>AI SOFTWARE ENGINEER</small></div></div><nav id="nav"></nav></aside>
+<div id="main">
+ <header><button id="menu" aria-label="Open menu">Menu</button>
+ <h1 id="title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M8 8a6 6 0 0 0 0 8M16 8a6 6 0 0 1 0 8M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/></svg>Control plane</h1>
+ <span class="pill" id="live"><i></i><span id="livetxt">checking</span></span>
+ <span class="pill" id="pill"><i></i><span id="pilltxt">Checking Groq…</span></span></header>
+ <div id="view"></div>
+</div>
+
+<dialog id="dlg">
+ <h3>New project</h3>
+ <label for="pn">Name</label><input id="pn" maxlength="80" placeholder="Recipe sharing app">
+ <label for="pd">What should it do? (optional)</label><textarea id="pd" rows="3" maxlength="500" placeholder="Users can post recipes, search, and save favorites."></textarea>
+ <label for="ps">Stack (optional)</label><input id="ps" maxlength="100" placeholder="Flask + vanilla JS">
+ <div class="err" id="pe"></div>
+ <div class="row" style="margin-top:16px;justify-content:flex-end">
+  <button class="btn ghost" id="pcancel">Cancel</button><button class="btn" id="pcreate">Create project</button></div>
+</dialog>
+
+<script>
+const $=s=>document.querySelector(s);
+const NAV=[
+ ['home','Home',1,'m'],['projects','My Projects',1,'m'],['builder','AI Builder',2,'m'],['chat','AI Chat',1,'m'],
+ ['editor','Code Editor',2,'m'],['council','AI Council',3,'m'],['testing','Testing Center',4,'m'],['debug','Debugging Center',4,'m'],
+ ['dna','Project DNA',3,'m'],['time','Time Travel',5,'m'],['safe','SafeBuild',4,'m'],['impact','Impact Radar',4,'m'],
+ ['docs','Documentation',3,'s'],['deploy','Deployment Center',6,'s'],['settings','Settings',1,'s']];
+const ICON={home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+projects:'<path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+builder:'<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
+chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+editor:'<path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/>',
+council:'<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 15a5 5 0 0 1 6 5"/>',
+testing:'<path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/>',
+debug:'<path d="M8 8a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0zM3 13h5M16 13h5M4 6l4 3M20 6l-4 3M5 20l3-3M19 20l-3-3"/>',
+dna:'<path d="M7 3c0 6 10 6 10 12M17 3c0 6-10 6-10 12M7 21c0-3 2-4 5-5M17 21c0-3-2-4-5-5"/>',
+time:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+safe:'<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/>',
+impact:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 12 18 6"/>',
+docs:'<path d="M6 3h8l5 5v13H6zM14 3v5h5M9 13h7M9 17h7"/>',
+deploy:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+settings:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'};
+const ico=(id,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[id]}</svg>`;
+const head=(id,label,title,desc)=>`<div class="phead"><small>${label}</small><h2>${ico(id,26)}<span>${title}</span></h2><p>${desc}</p></div>`;
+const PLANNED={
+ builder:'Turn a prompt into a full app, then preview it.',editor:'Edit project files with syntax highlighting.',
+ council:'Several AI roles review a change before it is applied.',testing:'Run real tests against generated apps.',
+ debug:'Detect errors, explain them, and propose fixes.',dna:'A saved profile of each project’s structure and conventions.',
+ time:'Checkpoints you can compare and restore.',safe:'Branch copies and approval gates for risky changes.',
+ impact:'See which files and features a change can affect.',docs:'Generated and maintained project documentation.',
+ deploy:'Checks and deploys to GitHub, Netlify and Render.'};
+const S={view:'home',status:null,projects:[],pid:localStorage.getItem('inf_pid')||null,busy:false};
+
+async function api(path,opt={}){
+ const r=await fetch(path,{headers:{'Content-Type':'application/json'},...opt});
+ let d={};try{d=await r.json()}catch{}
+ if(!r.ok)throw new Error(d.error||('Request failed ('+r.status+')'));
+ return d;
+}
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const md=t=>DOMPurify.sanitize(marked.parse(t));
+function ago(ts){const s=Date.now()/1000-ts;if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+' min ago';if(s<86400)return Math.floor(s/3600)+' h ago';return Math.floor(s/86400)+' d ago'}
+
+function buildNav(){
+ let h='',g='m';
+ NAV.forEach(([id,l,ph,grp])=>{
+  if(grp!==g){g=grp;h+='<div class="grp">SYSTEM</div>'}
+  h+=`<button data-v="${id}" class="${S.view===id?'on':''}">${ico(id)}<span>${l}</span>${ph===1?'<i class="dot"></i>':`<em>P${ph}</em>`}</button>`});
+ $('#nav').innerHTML=h;
+ $('#nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{go(b.dataset.v);$('#side').classList.remove('open')});
+}
+function go(v){S.view=v;buildNav();render()}
+async function refresh(){
+ try{S.status=await api('/api/status');S.projects=await api('/api/projects')}catch(e){S.status=null}
+ const ok=S.status&&S.status.api_key_configured;
+ $('#pill').className='pill'+(ok?' ok':'');$('#live').className='pill'+(S.status?' ok':'');$('#livetxt').textContent=S.status?'live':'offline';
+ $('#pilltxt').textContent=!S.status?'Server unreachable':ok?'Groq connected · '+S.status.model:'Groq key missing';
+}
+async function render(){
+ await refresh();
+ const v=S.view,el=$('#view');
+ if(v==='home')home(el);else if(v==='projects')projects(el);else if(v==='chat')chat(el);
+ else if(v==='settings')settings(el);else planned(el,v);
+}
+
+function home(el){
+ const n=S.projects.length,ok=S.status&&S.status.api_key_configured,msgs=S.projects.reduce((a,p)=>a+p.messages,0);
+ const row=(k,v,c)=>`<div class="kv"><span>${k}</span><b ${c?`style="color:${c}"`:''}>${v}</b></div>`;
+ el.innerHTML=`${head('home','Overview','Describe it. Build it. Ship it.','Phase 1 is live: projects and AI chat powered by Groq. Sections marked with a later phase are not built yet, and nothing in them is simulated.')}
+ ${ok?'':`<div class="warn" style="margin-bottom:20px">Set <code>GROQ_API_KEY</code> as an environment variable (in Codespaces, add it as a secret) and restart <code>app.py</code> to enable chat.</div>`}
+ <div class="cols"><div class="panel"><h4>Stats</h4><p class="hint">Live from the server</p>
+  ${row('Projects',n)}${row('Messages',msgs)}${row('Groq key',ok?'configured':'missing',ok?'var(--accent)':'var(--bad)')}${row('Model',esc(S.status&&S.status.model||'unknown'))}
+  <div class="row" style="margin-top:16px"><button class="btn" id="hn">New project</button>${n?'<button class="btn ghost" id="hc">Open AI Chat</button>':''}</div></div>
+ <div class="panel"><h4>Recent projects</h4><p class="hint">Most recently active first</p>
+  ${n?S.projects.slice(0,6).map(p=>`<div class="li" data-open="${p.id}"><span class="mono">${esc(p.name)}</span><em>${p.messages} messages · ${ago(p.updated)}</em></div>`).join(''):'<p class="mute">No projects yet. Create one to start chatting.</p>'}</div></div>`;
+ $('#hn').onclick=openDlg;if($('#hc'))$('#hc').onclick=()=>go('chat');
+ el.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{S.pid=b.dataset.open;localStorage.setItem('inf_pid',S.pid);go('chat')});
+}
+function card(p){return`<div class="card"><h3>${esc(p.name)}</h3>
+ <div class="mute" style="min-height:44px">${esc(p.description||'No description')}</div>
+ <div class="mute" style="font-size:13px;margin:8px 0 12px">${p.stack?esc(p.stack)+' · ':''}${p.messages} messages · updated ${ago(p.updated)}</div>
+ <div class="row"><button class="btn" data-open="${p.id}">Open chat</button><button class="btn danger" data-del="${p.id}">Delete</button></div></div>`}
+function bindCards(el){
+ el.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{S.pid=b.dataset.open;localStorage.setItem('inf_pid',S.pid);go('chat')});
+ el.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
+  const p=S.projects.find(x=>x.id===b.dataset.del);
+  if(!confirm(`Delete “${p.name}” and its chat history? This cannot be undone.`))return;
+  try{await api('/api/projects/'+p.id,{method:'DELETE'});if(S.pid===p.id){S.pid=null;localStorage.removeItem('inf_pid')}render()}catch(e){alert(e.message)}});
+}
+function projects(el){
+ el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start">${head('projects','Workspace','My projects','Each project keeps its own chat history, separate from the others.')}<button class="btn" id="pn2">New project</button></div>
+ ${S.projects.length?`<div class="grid">${S.projects.map(card).join('')}</div>`:`<div class="card dashed"><h3>No projects yet</h3><p class="mute">Create your first project to start chatting with Groq about it.</p></div>`}`;
+ $('#pn2').onclick=openDlg;bindCards(el);
+}
+function openDlg(){$('#pn').value=$('#pd').value=$('#ps').value='';$('#pe').textContent='';$('#dlg').showModal();$('#pn').focus()}
+$('#pcancel').onclick=()=>$('#dlg').close();
+$('#pcreate').onclick=async()=>{
+ try{const p=await api('/api/projects',{method:'POST',body:JSON.stringify({name:$('#pn').value,description:$('#pd').value,stack:$('#ps').value})});
+  $('#dlg').close();S.pid=p.id;localStorage.setItem('inf_pid',p.id);go('chat')}catch(e){$('#pe').textContent=e.message}};
+
+async function chat(el){
+ if(!S.projects.length){el.innerHTML=`<div class="card"><h3>Create a project first</h3><p class="mute">Chats belong to a project so Groq knows what you’re building.</p><button class="btn" id="cn">New project</button></div>`;$('#cn').onclick=openDlg;return}
+ if(!S.projects.find(p=>p.id===S.pid))S.pid=S.projects[0].id;
+ const ok=S.status&&S.status.api_key_configured;
+ el.innerHTML=`<div id="chatwrap"><div class="row" style="margin-bottom:12px">
+  <select id="psel" style="max-width:280px">${S.projects.map(p=>`<option value="${p.id}" ${p.id===S.pid?'selected':''}>${esc(p.name)}</option>`).join('')}</select>
+  <button class="btn ghost" id="clr">Clear chat</button></div>
+  <div id="msgs"></div>
+  ${ok?'':'<div class="warn" style="margin-bottom:10px">Groq key missing. Set <code>GROQ_API_KEY</code> and restart the server to send messages.</div>'}
+  <div id="composer"><textarea id="inp" rows="2" placeholder="Ask about your project, or describe a feature to build…"></textarea><button class="btn" id="send" ${ok?'':'disabled'}>Send</button></div></div>`;
+ $('#psel').onchange=e=>{S.pid=e.target.value;localStorage.setItem('inf_pid',S.pid);chat(el)};
+ $('#clr').onclick=async()=>{if(confirm('Clear this project’s chat history?')){await api(`/api/projects/${S.pid}/messages`,{method:'DELETE'});chat(el)}};
+ const box=$('#msgs');
+ const add=(role,text)=>{const d=document.createElement('div');d.className='m '+role;d.innerHTML=role==='user'?esc(text).replace(/\n/g,'<br>'):md(text);box.appendChild(d);
+  d.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.className='copy';b.textContent='Copy';b.onclick=()=>{navigator.clipboard.writeText(pre.innerText.replace(/^Copy\n?/,''));b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)};pre.appendChild(b)});
+  box.scrollTop=box.scrollHeight;return d};
+ try{const p=await api('/api/projects/'+S.pid);
+  if(!p.history.length)box.innerHTML=`<div class="mute">Nothing here yet. Try “Plan the pages and data model for this project.”</div>`;
+  else p.history.forEach(m=>add(m.role,m.content))}catch(e){box.innerHTML=`<div class="err">${esc(e.message)}</div>`}
+ const send=async()=>{
+  const t=$('#inp').value.trim();if(!t||S.busy||!ok)return;
+  if(box.querySelector('.mute'))box.innerHTML='';
+  S.busy=true;$('#send').disabled=true;$('#inp').value='';add('user',t);
+  const w=document.createElement('div');w.className='m assistant';w.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';box.appendChild(w);box.scrollTop=box.scrollHeight;
+  try{const r=await api('/api/chat',{method:'POST',body:JSON.stringify({project_id:S.pid,message:t})});w.remove();add('assistant',r.reply)}
+  catch(e){w.className='m assistant err';w.textContent=e.message}
+  S.busy=false;$('#send').disabled=false;$('#inp').focus()};
+ $('#send').onclick=send;
+ $('#inp').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}};
+}
+function settings(el){
+ const s=S.status||{};
+ el.innerHTML=`${head('settings','System','Settings','Connection details for the AI engine.')}<div class="panel" style="max-width:600px"><h4>Groq API</h4><p class="hint">Read from the server environment</p>
+  <div class="kv"><span>Key</span><b style="color:${s.api_key_configured?'var(--accent)':'var(--bad)'}">${s.api_key_configured?'configured':'not configured'}</b></div>
+  <div class="kv"><span>Model</span><b>${esc(s.model||'unknown')}</b></div>
+  <p class="mute">The key comes from the <code>GROQ_API_KEY</code> environment variable and never reaches this page. To use a different model, set <code>GROQ_MODEL</code> and restart <code>app.py</code>.</p></div>`;
+}
+function planned(el,v){
+ const [,l,ph]=NAV.find(n=>n[0]===v);
+ el.innerHTML=`${head(v,'Planned · Phase '+ph,l,PLANNED[v])}<div class="card dashed" style="max-width:600px"><h3>Not built yet</h3>
+  <p class="mute" style="margin-bottom:0">Scheduled for Phase ${ph}. Nothing on this page is simulated.</p></div>`;
+}
+$('#menu').onclick=()=>$('#side').classList.toggle('open');
+buildNav();go('home');
+</script>
+</body>
+</html>
