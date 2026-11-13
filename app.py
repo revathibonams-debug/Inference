@@ -17,7 +17,7 @@ from flask import Flask, jsonify, request, send_from_directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "inference_data.json")  # created at runtime
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")  # override with GROQ_MODEL (see console.groq.com/docs/models)
+MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 MAX_HISTORY = 30  # messages sent to Groq per request
 
 SYSTEM_PROMPT = (
